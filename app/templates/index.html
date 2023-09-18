@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        header {
+            background-color: #f4f4f4;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .search {
+            display: block;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        
+        .search input {
+            flex-grow: 1;
+            padding: 0.5rem;
+        }
+        
+        .search button {
+            background-color: #333;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+        
+        .results {
+            margin: 2rem 0;
+        }
+    </style>
+    <title>Movie Search App</title>
+</head>
+
+<body>
+    <header>
+        <h1>Movie Search App</h1>
+    </header>
+    <section class="search">
+        <input type="text" id="input-title" placeholder="Enter movie title">
+        <!-- <input type="text" id="input-imdb_id" placeholder="Enter movie imbd_id"> -->
+        <input type="text" id="input-year" placeholder="Enter movie year">
+        <!-- <input type="text" id="input-r_type" placeholder="Enter movie r_type"> -->
+        <!-- <input type="text" id="input-plot" placeholder="Enter movie plot"> -->
+        <button id="search-button">Search</button>
+    </section>
+    <section class="results">
+        <h2>Results</h2>
+        <ul id="results-list"></ul>
+    </section>
+    <script>
+        document.getElementById("search-button").addEventListener("click", searchMovies);
+
+        function searchMovies() {
+            let outputArea = document.getElementById("results-list");
+            const title = document.getElementById("input-title").value;
+            // const imdb_id = document.getElementById("input-imdb_id").value;
+            const year = document.getElementById("input-year").value;
+            // const r_type = document.getElementById("input-r_type").value;
+            // const plot = document.getElementById("input-plot").value;
+            const codeData = {
+                title: title,
+                //   imdb_id: imdb_id,
+                year: year,
+                //  r_type: r_type,
+                //  plot: plot
+            };
+
+            fetch('/search_movies', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(codeData)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    outputArea.textContent = result.output || result.error || 'No output';
+                })
+                .catch(error => {
+                    outputArea.textContent = 'Error: ' + error.message;
+                });
+        }
+
+        function displayResults(results) {
+            const list = document.getElementById("results-list");
+            clearResultsList();
+
+            results.forEach((movie) => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `${movie.Title} (${movie.Year})`;
+                list.appendChild(listItem);
+            });
+        }
+
+        function clearResultsList() {
+            document.getElementById("results-list").innerHTML = "";
+        }
+    </script>
+</body>
+
+</html>
